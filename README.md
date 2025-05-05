@@ -58,3 +58,6 @@ Versão final do trabalho acadêmico.
 ```bash
 git clone https://github.com/seuusuario/portfolio-tcc-llm.git
 cd portfolio-tcc-llm
+
+### Acompanhamento no Trello.
+https://trello.com/invite/b/6819418fe928d6cd44356109/ATTId3df87f6b5124a15708c717c6b987fd61E4B2C4E/inteligencia-personalizada
