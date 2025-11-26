@@ -1,0 +1,143 @@
+# 1. Documentação do Projeto
+
+## 1.1 Motivação
+
+O mercado atual de ERPs e sistemas corporativos possui grande volume de dados, porém o acesso a essas informações normalmente exige conhecimento técnico em SQL ou suporte de equipes especializadas em BI. Isso limita a autonomia do usuário final e adiciona custos operacionais.
+
+Este projeto resolve esse problema através do uso de Inteligência Artificial aplicada à consulta semântica em bancos de dados reais. O sistema permite que o usuário formule perguntas em linguagem natural e receba respostas automáticas, seguras e contextualizadas.
+
+A solução utiliza IA e busca semântica para:
+
+* Interpretar a intenção do usuário.                    (NPL_agent)
+* Identificar quais tabelas e colunas são relevantes.   (Mapping_agent)
+* Gerar SQL seguro e validado.                          (query_agent)
+* Executar a consulta e apresentar os resultados.       
+* Explicar a resposta em linguagem natural.             (Postprocessing_agent)
+
+Dessa forma, o projeto aproxima usuários não técnicos de informações estratégicas do ERP.
+
+---
+
+## 1.2 Requisitos
+
+### Requisitos Funcionais
+
+* Permitir consulta em linguagem natural.
+* Realizar busca semântica para localizar tabelas relevantes.
+* Gerar comandos SQL válidos e seguros.
+* Validar todas as colunas e tabelas antes da consulta.
+* Executar a query e retornar resultados formatados.
+* Responder ao usuário com interpretação em português.
+* Indexar e interpretar esquema de banco de dados real.
+
+### Requisitos Não Funcionais
+
+* Privacidade e segurança de dados (compatível com LGPD).
+* Operação local/offline sem dependência de nuvem.
+* Baixo tempo de resposta.
+* Modularização e extensibilidade.
+* Log e rastreamento de execução.
+
+---
+
+## 1.3 Modelagem
+
+### Organização dos componentes principais
+
+| Módulo               | Função                                |
+| -------------------- | ------------------------------------- |
+| Query Agent          | Geração de SQL                        |
+| Mapping Agent        | Seleção das tabelas relevantes        |
+| Retriever            | Busca semântica baseada em embeddings |
+| Postprocessing Agent | Explicação do resultado               |
+| LLM Server           | Processamento do modelo (Llama 3.1)   |
+| DB Engine            | Execução das queries                  |
+
+### Fluxo lógico do processamento
+
+```
+Usuário -> API -> Mapping Agent -> SQL Generator (LLM)
+        -> Validação de SQL -> Banco de Dados
+        -> Pós-processamento -> Resposta Final
+```
+
+---
+
+## 1.4 Arquitetura
+
+Arquitetura inspirada no conceito de RAG (Retrieval-Augmented Generation), porém aplicada ao domínio de SQL e bancos relacionais.
+
+```
+            ┌─────────────┐
+  Pergunta  │   Chroma    │
+ Natural ─▶│ Retriever   │────────┐
+            | Npl+Mapping |
+            └──────▲──────┘        │
+                  │ tabelas      │
+         ┌────────┴────────┐     │
+         │  SQL Generator  │◀────┘
+         │   (LLM)         │
+         └──────┬──────────┘
+                │ SQL validado
+         ┌──────▼──────────┐
+         │   Validator     │
+         └──────┬──────────┘
+                │
+         ┌──────▼───────────┐
+         │  PostgreSQL/ERP  │
+         └──────┬───────────┘
+                │ resultados
+         ┌──────▼────────────┐
+         │ Pós-processamento │
+         └──────┬────────────┘
+                │
+             Resposta
+```
+
+---
+
+## 1.5 Instruções de Uso
+
+### Instalação
+
+```
+git clone https://github.com/seu-repo.git
+cd Inteligencia-Personalizada
+python -m venv venv
+source venv/bin/activate  # ou venv\Scripts\activate no Windows
+pip install -r requirements.txt
+```
+
+### Subir o servidor LLM
+
+```
+ollama serve
+ollama pull llama3.1
+```
+
+### Configurar o banco
+
+Crie o arquivo `.env` com:
+
+```
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+SCHEMA=sisplan
+```
+
+### Indexar o banco
+
+```
+python app/data_pipeline/run_full_pipeline.py
+```
+
+### Executar a API
+
+```
+uvicorn app.main:app --reload
+```
+
+---
+
+## 1.6 Objetivo Final da Solução
+
+o projeto entrega um sistema inteligente capaz de transformar linguagem natural em consultas SQL interpretáveis, seguras e funcionais, reduzindo barreiras técnicas e ampliando a autonomia do usuário corporativo.

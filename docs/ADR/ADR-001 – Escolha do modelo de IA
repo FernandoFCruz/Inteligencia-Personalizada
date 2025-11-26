@@ -1,0 +1,34 @@
+# ADR-001 – Escolha do modelo de IA
+
+## Status
+Aceito
+
+## Contexto
+A solução necessita de um modelo capaz de interpretar linguagem natural em português,
+gerar SQL válido e pós-processar respostas. A solução deve funcionar offline/local
+para evitar custos e problemas de privacidade (LGPD).
+
+## Opções avaliadas
+1. OpenAI GPT
+2. Azure Cognitive Services
+3. HuggingFace API
+4. Llama 3 local via Ollama (atual escolha)
+
+## Decisão
+Utilizar o modelo **Llama 3.1 local**, via servidor Ollama.
+
+## Justificativa
+- Zero dependência de nuvem
+- Baixo custo operacional
+- Melhor privacidade de dados
+- Bom desempenho para NLP + SQL
+
+## Consequências
+### Positivas
+- Segurança + LGPD
+- Sem impacto financeiro
+- Fácil ajuste e fine-tuning
+
+### Negativas
+- Exigencia de hardware
+- Configuração inicial mais complexa

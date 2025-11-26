@@ -1,0 +1,30 @@
+# ADR-002 – Escolha do Banco de Dados
+
+## Status
+Aceito
+
+## Contexto
+O sistema precisa consultar tabelas complexas de ERP e executar queries automáticas.
+
+## Opções avaliadas
+- MySQL
+- SQLite
+- MongoDB
+- PostgreSQL (escolhido)
+
+## Decisão
+Utilizar PostgreSQL com driver psycopg2.
+
+## Justificativa
+- Melhor compatibilidade com ERP
+- Suporte avançado a SQL
+- Performance em JOINs e índices
+
+## Consequências
+Positivas:
+- ANSI SQL real
+- Facilidade com schemas
+- fator chave: Atual banco de dados do cliente de exemplo
+
+Negativas:
+- Setup mais complexo

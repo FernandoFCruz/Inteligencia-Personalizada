@@ -1,0 +1,21 @@
+# ADR-003 – Vetor semântico via ChromaDB
+
+## Contexto
+É necessário localizar automaticamente quais tabelas respondem à pergunta do usuário.
+
+## Alternativas
+- ChromaDB
+- Pinecone
+- Elasticsearch
+- Sem embeddings (heurísticas apenas)
+
+## Decisão
+Usar ChromaDB local
+
+## Motivações
+- 100% offline
+- fator chave: baixa latência
+- fácil indexação
+
+## Resultado
+Busca semântica + classificação automática.

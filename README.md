@@ -50,7 +50,7 @@ Endpoints:
 
 ### Setup
 ```bash
-git clone <repo>
+git clone <https://github.com/FernandoFCruz/Inteligencia-Personalizada.git>
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
