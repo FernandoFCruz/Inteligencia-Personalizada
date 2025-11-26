@@ -1,65 +1,105 @@
-# 🧠 TCC - LLM Local e Intranet Especializada nas Regras de Negócio
 
-Este repositório contém o portfólio completo do Trabalho de Conclusão de Curso (TCC) com o tema:  
-**"Desenvolvimento de uma LLM Local e Intranet Especializada nas Regras de Negócio de uma Empresa"**.
+# Inteligência Personalizada – Query Agent com IA (RAG + SQL + Pós-Processamento)
 
----
+## 🧠 Objetivo do Projeto
+O objetivo deste projeto é desenvolver um agente inteligente capaz de interpretar perguntas em linguagem natural, localizar automaticamente as tabelas corretas em um banco de dados empresarial (ERP), gerar consultas SQL seguras e validadas, executar no banco real e responder em linguagem natural usando um modelo LLM local (LLaMA via Olhama/Ollama).
 
-## 📌 Objetivo
+## 📘 Escopo
+- Extração automática do schema.
+- Pipeline RAG completo com ChromaDB.
+- SQL Generator robusto com validação.
+- Pós-processamento com LLM.
+- API FastAPI para interação.
+- Execução segura no PostgreSQL.
 
-Desenvolver e implantar uma **Large Language Model (LLM)** local, integrada a uma **intranet corporativa**, com foco em fornecer respostas contextualizadas baseadas nas regras, documentos e processos internos da empresa. O projeto visa aumentar a eficiência no acesso à informação, reduzir gargalos operacionais e fomentar a autonomia dos colaboradores.
+## 🔧 Descrição Técnica
+### 1. Data Pipeline
+- Extração de schema real.
+- Geração de descrições semânticas.
+- Glossário automático (TF-IDF).
+- Tags heurísticas.
+- Indexação no ChromaDB.
 
----
+### 2. Mapping Agent (RAG)
+- Busca semântica.
+- Classificação opcional por domínio.
+- Suporte multi-tabelas.
 
-## 🏗️ Estrutura do Repositório
+### 3. SQL Generator
+- Limpeza e validação rígida.
+- Injeção de schema.
+- Correção de tipos.
+- Remoção de colunas inválidas.
+- Suporte a múltiplas tabelas.
 
-📁 /docs
-Documentação, artigos e relatórios do projeto.
-📁 /src
-Código-fonte da aplicação (backend, frontend, LLM).
-📁 /models
-Modelos treinados ou configurados para uso local.
-📁 /datasets
-Dados e documentos utilizados no fine-tuning da LLM.
-📁 /intranet
-Estrutura da intranet (interface, autenticação, buscas).
-📄 README.md
-Este arquivo.
-📄 TCC_final.pdf
-Versão final do trabalho acadêmico.
+### 4. Pós-processamento
+- Tabelas formatadas.
+- Resumo em linguagem natural.
 
+### 5. API FastAPI
+Endpoints:
+- `POST /query`
+- `GET /`
 
----
+## 📦 Instalação
+### Requisitos
+- Python 3.10+
+- PostgreSQL
+- Olhama/Ollama
+- ChromaDB
 
-## ⚙️ Tecnologias Utilizadas
-
-- 🧠 **LLM local**: [LLama.cpp](https://github.com/ggerganov/llama.cpp), [Ollama](https://ollama.ai/), [LangChain](https://www.langchain.com/)
-- 🗃️ **Base de conhecimento**: RAG (Retrieval-Augmented Generation) com embeddings via [FAISS](https://github.com/facebookresearch/faiss)
-- 🌐 **Intranet**: React + Node.js (ou Django, Flask, etc.)
-- 📄 **Documentos**: Leitura e processamento de PDFs, DOCXs, e planilhas
-- 🔐 **Segurança**: Autenticação local com controle de permissões
-- 📦 **Containerização**: Docker
-
----
-
-## 🧪 Funcionalidades Desenvolvidas
-
-- [x] Integração de modelo LLM com documentos internos
-- [x] Interface web para consulta e resposta
-- [x] Upload e indexação de novos documentos
-- [x] Busca semântica por conteúdo interno
-- [x] Fine-tuning e adaptação às regras de negócio
-
----
-
-## 🚀 Como Executar o Projeto
-
-### 1. Clonar o repositório
+### Setup
 ```bash
-git clone https://github.com/seuusuario/portfolio-tcc-llm.git
-cd portfolio-tcc-llm
+git clone <repo>
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
----
+### Configuração
+Criar `.env` com:
+```
+DATABASE_URL=postgresql://user:pass@host/db
+SCHEMA=sisplan
+LLAMA_SERVER=http://localhost:11434
+CHROMA_DIR=./chroma_data
+```
 
-### Acompanhamento no Trello.
-https://trello.com/invite/b/6819418fe928d6cd44356109/ATTId3df87f6b5124a15708c717c6b987fd61E4B2C4E/inteligencia-personalizada
+### Pipeline
+```bash
+python -m app.data_pipeline.run_full_pipeline
+```
+
+### LLAMA
+```bash
+ollama serve
+```
+
+### API
+```bash
+uvicorn main:app --reload
+```
+
+### INTERFACE
+```bash
+streamlit run .\frontend\proto\streamlit_app.py
+```
+
+## 🚀 Tecnologias
+- Python / FastAPI  
+- PostgreSQL  
+- ChromaDB  
+- SentenceTransformers  
+- LLaMA 3.1  
+- TF-IDF / Scikit-Learn  
+
+## 🛡 Ética & LGPD
+- LLM local.
+- Dados não enviados externamente.
+- Apenas informações do banco autorizado.
+
+## 🏁 Status
+- Pipeline ✔
+- SQL Generator ✔
+- Pós-processamento ✔
+- API ✔
