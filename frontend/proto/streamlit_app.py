@@ -4,12 +4,12 @@ import pandas as pd
 
 API_URL = "http://localhost:8000/query"
 
-st.set_page_config(page_title="Assistente SQL Inteligente", layout="wide")
+st.set_page_config(page_title="Inteligência Personalizada", layout="wide")
 
-st.title("🧠 Assistente SQL Inteligente")
-st.write("Digite sua pergunta e receba automaticamente o SQL, o resumo inteligente e o resultado.")
+st.title("🧠 Inteligência Personalizada")
+st.write("Digite sua pergunta e recebe a informa extraida e tratada diretamente do banco")
 
-question = st.text_input("Pergunta em linguagem natural:", "")
+question = st.text_input("Pergunta ao banco de dados:", "")
 
 if st.button("Gerar SQL e Consultar"):
     if not question.strip():

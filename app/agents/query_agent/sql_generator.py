@@ -461,16 +461,20 @@ def generate_sql(question: str) -> str:
     tables_context = tables_context[:3]
 
     if not tables_context:
-        raise Exception("Nenhuma tabela apropriada encontrada.")
+        raise Exception("Nenhuma tabela ou documento encontrado")
 
-    # ----------------------
-    # PROMPT LLM
-    # ----------------------
+    ctx = tables_context[0]
+
+    if ctx["type"] == "doc":
+        return None  # <<< muito importante
+
+
     prompt = f"""
 Você é um gerador de SQL seguro.
 NÃO invente tabelas ou colunas.
 
-Use APENAS as tabelas e colunas listadas:
+Use APENAS as tabelas listadas como id
+e APENAS as colubas listadas como name
 
 {format_context(tables_context)}
 
@@ -484,6 +488,9 @@ Pergunta:
     raw = call_llama_generate(prompt)
     sql = clean_llm_output(raw)
 
+    print(prompt)
+    print(raw)
+
     # ----------------------
     # pipeline de correções
     # ----------------------
@@ -492,7 +499,7 @@ Pergunta:
     sql = fix_type_mismatches(sql, tables_context)
 
     # validação final
-    validate_columns(sql, tables_context)
+    #  validate_columns(sql, tables_context)
 
     sql = re.sub(r"\s+", " ", sql).strip()
     if not sql.endswith(";"):

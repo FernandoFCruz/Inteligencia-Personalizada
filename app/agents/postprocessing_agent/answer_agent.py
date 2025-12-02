@@ -80,3 +80,42 @@ Escreva a melhor explicação possível em português claro:
     """
 
     return await call_llama_generate_safe(prompt)
+
+async def generate_llm_answer_from_docs(question: str, docs: list):
+
+    context = "\n\n".join(d["text"] for d in docs[:3])
+
+    prompt = f"""
+Responda a pergunta usando SOMENTE o contexto abaixo.
+Se não encontrar resposta, diga que não encontrou.
+
+Pergunta:
+{question}
+
+Contexto:
+{context}
+
+Resposta:
+"""
+
+    return await call_llama_generate_safe(prompt)
+
+
+async def generate_llm_answer_from_docs(question: str, docs: list):
+
+    context = "\n\n".join(d["text"] for d in docs[:3])
+
+    prompt = f"""
+Responda a pergunta usando SOMENTE o contexto abaixo.
+Se não encontrar resposta, diga que não encontrou.
+
+Pergunta:
+{question}
+
+Contexto:
+{context}
+
+Resposta:
+"""
+
+    return await call_llama_generate_safe(prompt)

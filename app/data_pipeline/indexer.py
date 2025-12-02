@@ -3,28 +3,65 @@ from app.core.config import settings
 from sentence_transformers import SentenceTransformer
 import json
 
-# Carrega embedder 1x
+# Carregado uma única vez
 EMBED_MODEL_PATH = settings.embed_model_path
 embedder = SentenceTransformer(EMBED_MODEL_PATH)
 
 
-def index_documents(docs):
-    """
-    Indexa documentos completos no ChromaDB, incluindo:
-    - descrição rica
-    - tags geradas
-    - termos de glossário
-    - score semântico
-    - metadados estruturais
-    - domínio classificado
-    """
-
+def get_collection():
     client = PersistentClient(path=settings.chroma_dir)
 
-    collection = client.get_or_create_collection(
+    return client.get_or_create_collection(
         name="db_schema",
         metadata={"hnsw:space": "cosine"}
     )
+
+
+# ------------------------------------------------------------------
+# INDEXAÇÃO DE DOCUMENTOS EXTERNOS (pdf, docx, txt)
+# ------------------------------------------------------------------
+def index_text_documents(docs):
+    """
+    docs deve ser no formato:
+    [
+      ("nome.ext", "conteúdo do arquivo"),
+      ...
+    ]
+    """
+    if not docs:
+        print("⚠ Nenhum documento externo para indexar.")
+        return True
+
+    collection = get_collection()
+
+    ids = [f"doc:{name}" for name, _ in docs]
+    texts = [content for _, content in docs]
+
+    embeddings = embedder.encode(texts, show_progress_bar=True)
+
+    collection.upsert(
+        ids=ids,
+        embeddings=embeddings.tolist(),
+        documents=texts,
+        metadatas=[
+            {
+                "type": "external_doc",
+                "source": name
+            }
+            for name, _ in docs
+        ]
+    )
+
+    print(f"📄 Indexação externa concluída: {len(ids)} docs")
+    return True
+
+
+# ------------------------------------------------------------------
+# INDEXAÇÃO DO SCHEMA DO BANCO
+# ------------------------------------------------------------------
+def index_documents(docs):
+
+    collection = get_collection()
 
     ids = []
     texts = []
@@ -32,12 +69,10 @@ def index_documents(docs):
 
     for d in docs:
 
-        # ---------------------------------------------------
-        # GARANTE que colunas essenciais SEMPRE existam
-        # ---------------------------------------------------
         columns = d.get("columns", [])
         colnames = {c["name"] for c in columns}
 
+        # Campos essenciais de ERP
         ESSENTIAL_COLS = {
             "ativo": "VARCHAR(1)",
             "tipo_entidade": "VARCHAR(1)",
@@ -48,9 +83,6 @@ def index_documents(docs):
             if col_name not in colnames:
                 columns.append({"name": col_name, "type": col_type})
 
-        # ---------------------------------------------------
-        # TEXTO RICO (melhor para embeddings)
-        # ---------------------------------------------------
         text = d.get("description") or (
             f"Tabela {d['table']} do schema {d['schema']}. "
             f"Colunas: {', '.join([c['name'] for c in columns])}. "
@@ -59,35 +91,24 @@ def index_documents(docs):
         ids.append(d["id"])
         texts.append(text)
 
-        # ---------------------------------------------------
-        # METADADOS COMPLETOS — sempre str, como Chroma exige
-        # ---------------------------------------------------
         metadatas.append({
             "table": d["table"],
             "schema": d["schema"],
 
-            # CORRIGIDO: sempre uma string JSON válida
+            # SEMPRE JSON:
             "columns": json.dumps(columns),
-
-            "pk": ", ".join(d.get("pk", [])),
-            "row_count": str(d.get("row_count", "")),
-
-            # também sempre JSON string
             "tags": json.dumps(d.get("tags", [])),
             "glossary_terms": json.dumps(d.get("glossary", [])),
 
+            "pk": ", ".join(d.get("pk", [])),
+            "row_count": str(d.get("row_count", "")),
             "semantic_score": float(d.get("semantic_score", 0)),
             "domain": d.get("domain", ""),
         })
 
-    # ---------------------------------------------------
-    # EMBEDDINGS
-    # ---------------------------------------------------
+    # Gera embeddings das tabelas
     embeddings = embedder.encode(texts, show_progress_bar=True)
 
-    # ---------------------------------------------------
-    # INDEXAÇÃO
-    # ---------------------------------------------------
     collection.upsert(
         ids=ids,
         embeddings=embeddings.tolist(),
@@ -96,5 +117,5 @@ def index_documents(docs):
     )
 
     print("✅ Indexação completa no ChromaDB.")
-    print(f"📦 {len(ids)} itens atualizados.")
+    print(f"📦 {len(ids)} tabelas indexadas.")
     return True
